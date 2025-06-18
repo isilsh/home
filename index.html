@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Typewriter with Outfit Font</title>
+  <title>Typewriter with Red and Fade</title>
 
-  <!-- Google Font: Outfit -->
+  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;600&display=swap" rel="stylesheet">
 
   <style>
@@ -22,11 +22,11 @@
 
     #wrapper {
       text-align: left;
-      margin-left: 260px; /* move the whole block right */
+      margin-left: 260px;
     }
 
     #typewriter {
-      font-size: 2rem;
+      font-size: 1.2rem;
       white-space: pre-wrap;
       min-height: 6em;
       width: 30ch;
@@ -39,6 +39,26 @@
       margin-left: 2px;
       animation: blink 0.75s step-end infinite;
     }
+    
+    .spaced {
+    margin-top: 1rem;
+    }
+    
+    .fade-in {
+      opacity: 0;
+      color: black;
+      transition: opacity 4s ease;
+      font-size: 1.2rem;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      color: #888;
+    }
+
+    .red {
+      color: #f00;
+    }
 
     @keyframes blink {
       0%, 100% { opacity: 0; }
@@ -49,33 +69,54 @@
 <body>
   <div id="wrapper">
     <div id="typewriter"></div><span id="cursor"></span>
+    <div id="fade1" class="fade-in">info@edburg.com</div>
+    <div id="fade2" class="fade-in">(+41).77.490.8817</div>
   </div>
 
   <script>
     const lines = [
-      "Welcome to my website.",
-      "This text appears",
-      "on multiple lines."
+      { text: "www.edburg.com", className: "" },
+      { text: "System reboot scheduled: 09.2025", className: "red" },
+      { text: "-3D modelling", className: "spaced" },
+      { text: "-3D visualization", className: "" },
+      { text: "-3D web integration", className: "" }
     ];
 
     const speed = 50;
-    const lineDelay = 600;
+    const lineDelay = 300;
+
     let lineIndex = 0;
     let charIndex = 0;
+    let currentLineElem = null;
 
     function typeLine() {
-      const currentLine = lines[lineIndex];
-      if (charIndex < currentLine.length) {
-        document.getElementById("typewriter").innerHTML += currentLine.charAt(charIndex);
-        charIndex++;
+      if (lineIndex >= lines.length) {
+        // Done typing, now fade in contact info
+        setTimeout(() => {
+          document.getElementById("fade1").classList.add("visible");
+          document.getElementById("fade2").classList.add("visible");
+        }, 10);
+        return;
+      }
+
+      const { text, className } = lines[lineIndex];
+
+      // On first character, create a new line element
+      if (charIndex === 0) {
+        currentLineElem = document.createElement("div");
+        if (className) currentLineElem.classList.add(className);
+        document.getElementById("typewriter").appendChild(currentLineElem);
+      }
+
+      currentLineElem.textContent += text.charAt(charIndex);
+      charIndex++;
+
+      if (charIndex < text.length) {
         setTimeout(typeLine, speed);
       } else {
-        document.getElementById("typewriter").innerHTML += "\n";
         lineIndex++;
         charIndex = 0;
-        if (lineIndex < lines.length) {
-          setTimeout(typeLine, lineDelay);
-        }
+        setTimeout(typeLine, lineDelay);
       }
     }
 

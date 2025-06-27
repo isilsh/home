@@ -9,6 +9,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;600&display=swap" rel="stylesheet">
 
   <style>
+    
+        html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+    
     body {
       margin: 0;
       background-color: #000;
@@ -22,7 +29,7 @@
 
     #wrapper {
       text-align: left;
-      margin-left: 260px;
+      margin-left: 20px;
     }
 
     #typewriter {
@@ -39,6 +46,22 @@
       margin-left: 2px;
       animation: blink 0.75s step-end infinite;
     }
+    
+    #fade1, #fade2 {
+  opacity: 0;
+  transition: opacity 0.5s ease; /* fade in half a second */
+}
+
+#fade1.visible, #fade2.visible {
+  opacity: 1;
+  color: #888;
+}
+
+#three-container {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out; /* quick fade in */
+}
+
     
     .spaced {
     margin-top: 1rem;
@@ -59,6 +82,27 @@
     .red {
       color: rgb(255, 255, 0);
     }
+    
+      #three-container {
+      width: 400px;
+      height: 300px;
+      margin-left: 0px;                       /* move the whole block right */
+      opacity: 0;                             /* start fully transparent */
+      transition: opacity 4s ease;            /* fade duration */
+      margin-top: 20px;
+    }
+    
+    #three-container.visible {
+  opacity: 1;
+}
+
+    canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 1px dashed white;  /* Dashed white border */
+  box-sizing: border-box;    /* Ensure border is included in size */
+    }
 
     @keyframes blink {
       0%, 100% { opacity: 0; }
@@ -67,60 +111,72 @@
   </style>
 </head>
 <body>
+  
+  
+    <script type="module" src="src/relaunch_v02.js"></script>
+  
+  
   <div id="wrapper">
     <div id="typewriter"></div><span id="cursor"></span>
     <div id="fade1" class="fade-in">info@edburg.com</div>
     <div id="fade2" class="fade-in">(+41).77.490.8817</div>
+        <div id="three-container"></div>
+
   </div>
+  
+<script>
+  const lines = [
+    { text: "www.edburg.com", className: "" },
+    { text: "relaunching: 09.2025", className: "red" },
+    { text: "-3D modelling", className: "spaced" },
+    { text: "-3D visualization", className: "" },
+    { text: "-3D web integration", className: "" }
+  ];
 
-  <script>
-    const lines = [
-      { text: "www.edburg.com", className: "" },
-      { text: "relaunching: 09.2025", className: "red" },
-      { text: "-3D modelling", className: "spaced" },
-      { text: "-3D visualization", className: "" },
-      { text: "-3D web integration", className: "" }
-    ];
+  const speed = 50;
+  const lineDelay = 300;
 
-    const speed = 50;
-    const lineDelay = 300;
+  let lineIndex = 0;
+  let charIndex = 0;
+  let currentLineElem = null;
 
-    let lineIndex = 0;
-    let charIndex = 0;
-    let currentLineElem = null;
+  function typeLine() {
+    if (lineIndex >= lines.length) {
+      // Done typing, now fade in fade1 and fade2 simultaneously
+      const fade1 = document.getElementById("fade1");
+      const fade2 = document.getElementById("fade2");
+      const threeContainer = document.getElementById("three-container");
 
-    function typeLine() {
-      if (lineIndex >= lines.length) {
-        // Done typing, now fade in contact info
-        setTimeout(() => {
-          document.getElementById("fade1").classList.add("visible");
-          document.getElementById("fade2").classList.add("visible");
-        }, 10);
-        return;
-      }
+      fade1.classList.add("visible");
+      fade2.classList.add("visible");
+      threeContainer.classList.add("visible");  // Fade-in at the same time
 
-      const { text, className } = lines[lineIndex];
-
-      // On first character, create a new line element
-      if (charIndex === 0) {
-        currentLineElem = document.createElement("div");
-        if (className) currentLineElem.classList.add(className);
-        document.getElementById("typewriter").appendChild(currentLineElem);
-      }
-
-      currentLineElem.textContent += text.charAt(charIndex);
-      charIndex++;
-
-      if (charIndex < text.length) {
-        setTimeout(typeLine, speed);
-      } else {
-        lineIndex++;
-        charIndex = 0;
-        setTimeout(typeLine, lineDelay);
-      }
+      return;
     }
 
-    window.onload = typeLine;
-  </script>
+    const { text, className } = lines[lineIndex];
+
+    // On first character, create a new line element
+    if (charIndex === 0) {
+      currentLineElem = document.createElement("div");
+      if (className) currentLineElem.classList.add(className);
+      document.getElementById("typewriter").appendChild(currentLineElem);
+    }
+
+    currentLineElem.textContent += text.charAt(charIndex);
+    charIndex++;
+
+    if (charIndex < text.length) {
+      setTimeout(typeLine, speed);
+    } else {
+      lineIndex++;
+      charIndex = 0;
+      setTimeout(typeLine, lineDelay);
+    }
+  }
+
+  window.onload = typeLine;
+</script>
+
 </body>
 </html>
